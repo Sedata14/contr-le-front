@@ -6,6 +6,7 @@ import type { User } from '../model/User';
 export const UserList = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [search, setSearch] = useState('');
+  const [sort, setSort] = useState('name'); // 'name' ou 'age'
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -26,12 +27,17 @@ export const UserList = () => {
   if (loading) return <p style={{ textAlign: 'center' }}>Ouais, ça charge...</p>;
   if (error) return <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>;
 
-  const filteredUsers = users.filter(
-    u =>
-      u.firstName.toLowerCase().includes(search.toLowerCase()) ||
-      u.lastName.toLowerCase().includes(search.toLowerCase()) ||
-      u.email.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredUsers = users
+    .filter(
+      u =>
+        u.firstName.toLowerCase().includes(search.toLowerCase()) ||
+        u.lastName.toLowerCase().includes(search.toLowerCase()) ||
+        u.email.toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (sort === 'name') return a.firstName.localeCompare(b.firstName);
+      return a.age - b.age;
+    });
 
   return (
     <div style={{ padding: '1rem' }}>
@@ -42,6 +48,14 @@ export const UserList = () => {
         onChange={e => setSearch(e.target.value)}
         style={{ padding: '0.5rem', marginBottom: '1rem', width: '100%' }}
       />
+      <select
+        value={sort}
+        onChange={e => setSort(e.target.value)}
+        style={{ padding: '0.5rem', marginBottom: '1rem', display: 'block' }}
+      >
+        <option value="name">Trier par nom</option>
+        <option value="age">Trier par âge</option>
+      </select>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
         {filteredUsers.map(user => <UserCard key={user.id} user={user} />)}
       </div>
