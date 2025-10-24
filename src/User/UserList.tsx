@@ -14,8 +14,14 @@ export const UserList = () => {
   }, []);
 
   return (
-    <div>
-      <pre>{JSON.stringify(users, null, 2)}</pre>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+      {users.map(user => (
+        <div key={user.id} style={{ border: '1px solid #ccc', padding: '1rem', borderRadius: '8px', width: '200px' }}>
+          <img src={user.image} alt={user.firstName} style={{ width: '100%', borderRadius: '50%' }} />
+          <h3>{user.firstName} {user.lastName}</h3>
+          <p>{user.email}</p>
+        </div>
+      ))}
     </div>
   );
 };
