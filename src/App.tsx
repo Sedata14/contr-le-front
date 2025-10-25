@@ -1,12 +1,14 @@
-import { useState } from 'react';
-import { UserList } from './User/UserList';
+import { useState } from 'react'
+import { Routes, Route } from 'react-router-dom'
+import { UserList } from './User/UserList'
+import { UserDetail } from './User/UserDetail'
 
 export const App = () => {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<'light' | 'dark'>('light')
 
   const toggleTheme = () => {
-    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
-  };
+    setTheme(prev => (prev === 'light' ? 'dark' : 'light'))
+  }
 
   return (
     <div className={theme} style={{ padding: '1rem', minHeight: '100vh' }}>
@@ -24,19 +26,16 @@ export const App = () => {
       >
         Switch to {theme === 'light' ? 'dark' : 'light'} mode
       </button>
-      <UserList />
+      <Routes>
+        <Route path="/" element={<UserList />} />
+        <Route path="/user/:id" element={<UserDetail />} />
+      </Routes>
       <style>{`
-        .light {
-          background-color: #fdfdfd;
-          color: #222;
-        }
-        .dark {
-          background-color: #222;
-          color: #fdfdfd;
-        }
+        .light { background-color: #fdfdfd; color: #222; }
+        .dark { background-color: #222; color: #fdfdfd; }
       `}</style>
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App
