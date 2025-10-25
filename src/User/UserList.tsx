@@ -6,18 +6,20 @@ import type { User } from '../model/User';
 export const UserList = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<'name' | 'age'>('name');
-  const [page, setPage] = useState(1);
+  const [sort, setSort] = useState('name');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [favorites, setFavorites] = useState<number[]>(() => {
     const stored = localStorage.getItem('favorites');
     return stored ? JSON.parse(stored) : [];
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 10;
 
   const toggleFavorite = (userId: number) => {
     setFavorites(prev => {
-      const updated = prev.includes(userId) ? prev.filter(id => id !== userId) : [...prev, userId];
+      const isFav = prev.includes(userId);
+      const updated = isFav ? prev.filter(id => id !== userId) : [...prev, userId];
       localStorage.setItem('favorites', JSON.stringify(updated));
       return updated;
     });
@@ -29,7 +31,7 @@ export const UserList = () => {
         const res = await axios.get('https://dummyjson.com/users');
         setUsers(res.data.users);
       } catch {
-        setError("Impossible de charger les utilisateurs.");
+        setError('jarrive pas à charger les utilisateurs.');
       } finally {
         setLoading(false);
       }
@@ -37,7 +39,7 @@ export const UserList = () => {
     fetchUsers();
   }, []);
 
-  const filteredAndSortedUsers = useMemo(() => {
+  const filteredUsers = useMemo(() => {
     return users
       .filter(u =>
         u.firstName.toLowerCase().includes(search.toLowerCase()) ||
@@ -47,12 +49,11 @@ export const UserList = () => {
       .sort((a, b) => sort === 'name' ? a.firstName.localeCompare(b.firstName) : a.age - b.age);
   }, [users, search, sort]);
 
-  const usersPerPage = 10;
-  const totalPages = Math.ceil(filteredAndSortedUsers.length / usersPerPage);
-  const paginatedUsers = useMemo(() => {
-    const start = (page - 1) * usersPerPage;
-    return filteredAndSortedUsers.slice(start, start + usersPerPage);
-  }, [filteredAndSortedUsers, page]);
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+  const currentUsers = filteredUsers.slice(
+    (currentPage - 1) * usersPerPage,
+    currentPage * usersPerPage
+  );
 
   if (loading) return <p style={{ textAlign: 'center' }}>Ouais, ça charge...</p>;
   if (error) return <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>;
@@ -68,14 +69,14 @@ export const UserList = () => {
       />
       <select
         value={sort}
-        onChange={e => setSort(e.target.value as 'name' | 'age')}
+        onChange={e => setSort(e.target.value)}
         style={{ padding: '0.5rem', marginBottom: '1rem', display: 'block' }}
       >
         <option value="name">Trier par nom</option>
         <option value="age">Trier par âge</option>
       </select>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
-        {paginatedUsers.map(user => (
+        {currentUsers.map(user => (
           <UserCard
             key={user.id}
             user={user}
@@ -84,23 +85,20 @@ export const UserList = () => {
           />
         ))}
       </div>
-      <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
-        {Array.from({ length: totalPages }, (_, i) => (
-          <button
-            key={i}
-            onClick={() => setPage(i + 1)}
-            style={{
-              padding: '0.3rem 0.6rem',
-              backgroundColor: i + 1 === page ? '#09f' : '#eee',
-              color: i + 1 === page ? '#fff' : '#000',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
-            {i + 1}
-          </button>
-        ))}
+      <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+        <button
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+        >
+          Précédent
+        </button>
+        <span>{currentPage} / {totalPages}</span>
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+        >
+          Suivant
+        </button>
       </div>
     </div>
   );
