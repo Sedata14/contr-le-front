@@ -45,4 +45,6 @@ j’ai mis animation sur opacity et utilisé keyframes pour chaque card
 - pagination slice correct des users + filtrage + tri en meme temps
 j’ai utilisé useMemo pour filtrer et trier puis slice pour la page actuelle, testé pour pas casser l’ordre
 
+-bug quand je cliquais sur un utilisateur rien ne s’affichait
+javais oublié de mettre le <App /> dans BrowserRouter dans main.tsx, je l'ai fais et ça a marché
 Omar Chekkouri.
