@@ -1,73 +1,48 @@
-# React + TypeScript + Vite
+Projet gihtub
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ce que j’ai fait
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+niveau 1
+- affichage liste utilisateurs depuis l’API
+- chaque utilisateur a photo, prenom, nom, email
+- clic sur un utilisateur pour voir detail: age, société, ville etc
+- creation des composants <UserList />, <UserCard />, <UserDetail />
+- navigation entre liste et detail via react router
+- loading et gestion erreur simple
 
-## React Compiler
+niveau 2
+- ajout recherche en temps réel sur prenom, nom et email
+- tri par nom ou age
+- pagination 10 utilisateurs par page
+- gestion propre des erreurs avec try/catch
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+niveau 3
+- ajout favoris avec clic sur etoile et persistance via localStorage
+- theme clair/sombre avec bouton pour switch
+- tri dynamique via select
+- useMemo pour optimiser filtrage et tri
+- composant de chargement visuel (fade-in cards)
 
-## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+ce qui a ete galere / problèmes survenus
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- react router j’avais des erreurs avec <Link>
+j’ai mis BrowserRouter dans index.tsx autour de <App /> et c’est passé
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- toggle des favoris persistance + mise a jour de la card en temps reel
+j’ai utilisé useState avec un tableau d’ids favoris et localStorage.setItem / getItem pour sauvegarder
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- theme switch le bouton disparait selon le theme
+j’ai ajouté des couleurs dynamiques selon le theme pour que le bouton soit visible tout le temps
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- oubli de dépendances dans useEffect qui faisait rerender infini
+j’ai ajouté les dépendances correctes et vérifié que ca loop plus
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- petites erreurs de style qui faisaient disparaitre le fade-in
+j’ai mis animation sur opacity et utilisé keyframes pour chaque card
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- pagination slice correct des users + filtrage + tri en meme temps
+j’ai utilisé useMemo pour filtrer et trier puis slice pour la page actuelle, testé pour pas casser l’ordre
+
+Omar Chekkouri.
